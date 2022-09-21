@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
 
-from .algorithm import dataExtraction, defineTime, timeIndex, searching
+from .algorithm import dataExtraction, defineTime, timeIndex, searchingFree, searchingBusy
 from .models import faculty_details
 
 # Create your views here.
@@ -22,11 +22,31 @@ def home(request):
     if request.method == 'POST':
         # reqDept = request.POST['department']
         reqDayIndex = dayIndex[request.POST['requested_day']]
-        reqTime = timeIndex(defineTime(request.POST))
+        if 'day_sort' in request.POST.keys():
+            if request.POST['day_sort'] == 'morning':
+                reqTime = timeIndex([i for i in range(8, 14)])
+                timeTemp = timeIndex([i for i in range(8, 14)])
+            elif request.POST['day_sort'] == 'evening':
+                reqTime = timeIndex([i for i in range(13, 17)])
+                timeTemp = timeIndex([i for i in range(13, 17)])
+            else:
+                reqTime = timeIndex([i for i in range(8, 17)])
+                timeTemp = timeIndex([i for i in range(8, 17)])
+        else:
+            reqTime = timeIndex(defineTime(request.POST))
+            timeTemp = defineTime(request.POST)
+
         querySet = faculty_details.objects.all()
+        context['day'] = request.POST['requested_day']
+        context['time'] = f'{timeTemp[0]}:00 - {timeTemp[-1]}:50'
 
-        context['eligibleEmps'] = searching(querySet, reqDayIndex, reqTime)
-
+        if request.POST['use_case'] == 'free':
+            context['eligibleEmps'] = searchingFree(querySet, reqDayIndex, reqTime)
+            context['status'] = 'Faculty who are free'
+        else:
+            context['eligibleEmps'] = searchingBusy(querySet, reqDayIndex, reqTime)
+            context['status'] = 'Faculty who are busy'
+    
     return render(request, 'main/home.html', context)
 
 @login_required(login_url='/login')
@@ -37,7 +57,8 @@ def fileInput(request):
         name = fs.save(uploaded_file.name, uploaded_file)
         path = "media/"+ str(uploaded_file.name)
         dataExtraction(path)
-        fs.delete(name)
+        # fs.delete(name)
+        fs.delete(uploaded_file.name)
         return HttpResponseRedirect('/')
 
     return render(request, 'main/fileInput.html', {})

@@ -37,6 +37,7 @@ def dataExtraction(file):
 
 
 def defineTime(post_request):
+    """Genrates time indices and appends to a list"""
     indices = []
     for key in post_request:
         if post_request[key] == 'clicked':
@@ -50,6 +51,7 @@ def defineTime(post_request):
 
 
 def timeIndex(timeList):
+    """Subtracts 8 from every value at the index"""
     res = []
     for time in timeList:
         timeInd = time - 8
@@ -57,7 +59,7 @@ def timeIndex(timeList):
 
     return res
 
-def fun(timeindex, dayList):
+def funFree(timeindex, dayList):
     res = None
     for i in timeindex:
         if dayList[i] == '0':
@@ -67,12 +69,35 @@ def fun(timeindex, dayList):
             break
     return res
 
-def searching(query_set, dayIndex, timeIndexList):
+def searchingFree(query_set, dayIndex, timeIndexList):
     eligibleEmps = []
+    count = 1
     for emp in query_set:
-        # print(emp.timetable[dayIndex])
-        if fun(timeIndexList, emp.timetable[dayIndex]):
-            eligibleEmps.append([emp.name, emp.idno])
+        if funFree(timeIndexList, emp.timetable[dayIndex]):
+            eligibleEmps.append([count, emp.name, emp.idno])
+            count += 1
 
     return eligibleEmps
 
+
+def funBusy(timeindex, daylist):
+    res = None
+    for i in timeindex:
+        if daylist[i] != '0':
+            res = True
+        else:
+            res = False
+            break
+    
+    return res
+
+
+def searchingBusy(query_set, dayIndex, timeIndexList):
+    eligibleEmps = []
+    count = 1
+    for emp in query_set:
+        if funBusy(timeIndexList, emp.timetable[dayIndex]):
+            eligibleEmps.append([count, emp.name, emp.idno])
+            count += 1
+
+    return eligibleEmps

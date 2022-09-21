@@ -79,11 +79,11 @@ WSGI_APPLICATION = 'fm.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fms',
-        'USER' : 'postgres',
-        'PASSWORD' : 'root',
-        'HOST' : 'localhost',
-        'PORT' : '5432'
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'Oi6XbDqYOP8WzE2Ej0mA',
+        'HOST': 'containers-us-west-38.railway.app',
+        'PORT': '5576',
     }
 }
 

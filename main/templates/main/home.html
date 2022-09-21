@@ -18,13 +18,22 @@
         <form action="" method="post">
             {% csrf_token %}
 
+        <h2>Use Case</h2>
+        <input type="radio" name="use_case" value="free"> Show faculty who are free
+        <input type="radio" name="use_case" value="busy"> Show faculty who are having class
+
         <h2>Day</h2>
         {% for day in days %}
             <input type="radio" name="requested_day" value="{{ day }}"> {{ day }}
         {% endfor %}
 
-        <h2>Timings</h2>
+        <h2>Sort By</h2>
             <ul>
+                <h3>Day</h3>
+                    <input type="radio" name="day_sort" value="morning"> Morning Half Day (8:00 - 13:00) <br>
+                    <input type="radio" name="day_sort" value="evening"> Evening Half Day (13:00 - 17:00) <br>
+                    <input type="radio" name="day_sort" value="full"> Whole Day (08:00 - 17:00) <br>
+                <h3>Hours</h3>
                 {% for i in numbers %}
                         <li> <input type="checkbox" value="clicked" name="c{{ i }}"> {{ i }}:00 - {{ i }}:50 </li>
                 {% endfor %}
@@ -34,18 +43,22 @@
         </form>
 
         {% if eligibleEmps %}
+        <h3>Day: {{ day }} <br> Time: {{ time }} <br> Status: {{ status }} </h3>
         <table>
             <tr>
+                <th>S. No</th>
                 <th>Name</th>
                 <th>ID</th>
             </tr>
             {% for emp in eligibleEmps %}
             <tr>
                 {% for i in emp %}
-                <td>{{ i }}</td>
+                    <td>{{ i }}</td>
                 {% endfor %}
             </tr>
             {% endfor %}
         </table>
+        {% else %}
+            <h3>No data found</h3>
         {% endif %}
 {% endblock content %}
